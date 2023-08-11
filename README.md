@@ -1,1 +1,1 @@
-# parallel-processing-api
+# parallel-processing-api using adonis-bull-queue
