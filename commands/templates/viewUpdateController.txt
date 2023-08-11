@@ -1,0 +1,134 @@
+import {{PascalCase}} from "App/Models/{{FolderName}}/{{PascalCase}}";
+import UserPolicy from "App/Policies/UserPolicy";
+import GlobalFunctions from "./GlobalFunctions";
+
+const userPolicy = new UserPolicy();
+const globalFunctions = new GlobalFunctions();
+
+export default class {{PascalCase}}Controller {
+
+    public async view({ inertia,params,auth }) {
+        const update = userPolicy.getData(auth, 'edit.{{PascalCase}}');
+
+        const routes = {
+            back:"/{{LowerCaseModuleName}}",
+            update:"/edit-{{LowerCaseModuleName}}"
+        }
+
+        const permissionRoutes = {
+            edit:"edit.{{PascalCase}}",
+        }
+
+        const permission = globalFunctions.get_permissions(permissionRoutes,auth)
+
+        const {{LowerCaseModuleName}} = {{PascalCase}}.all();
+        const columns = [
+            {{#columns}}
+            {{#controllerField}}
+            { field: "{{Field}}", headerName: "{{headerName}}",flex:1},
+            {{/controllerField}}
+            {{/columns}}
+          ];
+          const current_routes = {
+            view:"/{{LowerCaseModuleName}}/",
+            edit:"/edit-{{LowerCaseModuleName}}/"
+        }
+
+        if(params.id){
+            const single_{{LowerCaseModuleName}} = await {{PascalCase}}.query().where("id", params.id);
+            const one = single_{{LowerCaseModuleName}}[0];
+            const fields:any = [];
+            Object.keys(one.toJSON()).forEach((field) => {
+                fields.push({ 
+                    name : field,
+                    header : this.toCapitalizeCase(field),
+                    type: (typeof one.$getAttribute(field)) === "number" ? "number" : 
+                            {{#columns}}
+                            {{#enumFields}}
+                            field === "{{Field}}" ? "dropdown" : 
+                            {{/enumFields}}
+                            {{/columns}}
+                            "text",
+                    data : single_{{LowerCaseModuleName}}[field],
+                    dropdown_values:
+                    {{#columns}}
+                    {{#enumFields}}
+                                 field === "{{Field}}"? {{PascalCase}}[`get_${field}`] :
+                    {{/enumFields}}
+                    {{/columns}}
+                                 [],
+                    disable: true
+                })
+            });
+            return inertia.render('scenes/EditViewForm',{id:params.id,fields:fields,initialValues:one.toJSON(),notDisable:false,title:"{{PascalCase}}",routes:routes});
+        }
+        return inertia.render('scenes/GridPage',{page_data: {{LowerCaseModuleName}}, column:columns,page_name:'{{PascalCase}}',current_routes:current_routes,id_name:"Id",permission:permission});
+    }
+    public async edit({ params,auth,inertia, request }) {
+       const single_{{LowerCaseModuleName}} = await {{PascalCase}}.query().where("id", params.id);
+            const one = single_{{LowerCaseModuleName}}[0];
+            const fields:any = [];
+            Object.keys(one.toJSON()).forEach((field) => {
+                fields.push({ 
+                    name : field,
+                    header : this.toCapitalizeCase(field),
+                    type: (typeof one.$getAttribute(field)) === "number" ? "number" : 
+                            {{#columns}}
+                            {{#enumFields}}
+                            field === "{{Field}}" ? "dropdown" : 
+                            {{/enumFields}}
+                            {{/columns}}
+                            "text",
+                    data : single_{{LowerCaseModuleName}}[field],
+                    dropdown_values:
+                    {{#columns}}
+                    {{#enumFields}}
+                                 field === "{{Field}}"? {{PascalCase}}[`get_${field}`] :
+                    {{/enumFields}}
+                    {{/columns}}
+                                 [],
+                     disable:
+                {{#columns}}
+                {{#controllerField}}
+                        field === '{{Field}}' ? false :
+                {{/controllerField}}
+                {{/columns}}
+                        true
+                })
+            })
+        const routes = {
+                        back:"/{{LowerCaseModuleName}}",
+                        update:"/update-{{LowerCaseModuleName}}/"
+                    }
+        return inertia.render('scenes/EditViewForm',{id:params.id,fields:fields,initialValues:one.toJSON(),notDisable:true,routes:routes,title:"{{PascalCase}}"});
+    }
+    public async update({ params,request,response}) {
+        const incoming_data = request.requestBody.data;
+        const {{LowerCaseModuleName}} = await {{PascalCase}}.query().where('id',params.id).first();
+        if({{LowerCaseModuleName}}){
+           try{
+             {{#columns}}
+                {{#controllerField}}
+                {{LowerCaseModuleName}}.{{fieldName}} = incoming_data.{{Field}};
+                {{/controllerField}}
+             {{/columns}}
+                await {{LowerCaseModuleName}}.save();
+                console.log("Updated Succesfully");
+                response.send({type : "success",message : "Data is Updated Successfully"})
+           }catch(e){
+                  console.log(e);
+               response.send({type : "error",message : "Error Occur. Data is not saved"})
+           }
+        }
+        else{
+            response.send({type : "error",message : "Invalid ID"})
+        }
+    }
+
+    public toCapitalizeCase(word){
+       return word.split('_')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+    }
+
+}

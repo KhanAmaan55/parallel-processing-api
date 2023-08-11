@@ -1,0 +1,7 @@
+
+//{{PascalCase}}
+Route.group(()=> {
+  Route.get('/{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.view").as("view.{{PascalCase}}")
+  Route.get('/edit-{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.edit").as("edit.{{PascalCase}}")
+  Route.put('/update-{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.update").as("update.{{PascalCase}}")
+}).middleware(["auth","checkRole"]) 

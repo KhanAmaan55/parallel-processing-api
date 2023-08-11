@@ -1,0 +1,13 @@
+
+
+//{{PascalCase}}
+Route.group(()=> {
+  Route.get('/{{LowerCaseModuleName}}', "{{PascalCase}}Controller.view").as("view.{{PascalCase}}")
+  Route.get('/create-{{LowerCaseModuleName}}', "{{PascalCase}}Controller.create").as("create.{{PascalCase}}")
+  Route.get('/edit-{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.create").as("edit.{{PascalCase}}")
+  Route.post('/delete-{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.delete").as("delete.{{PascalCase}}")
+  Route.post('/update-{{LowerCaseModuleName}}/:id?', "{{PascalCase}}Controller.update").as("update.{{PascalCase}}")
+  Route.post('/store-{{LowerCaseModuleName}}', "{{PascalCase}}Controller.store").as("store.{{PascalCase}}")
+}).middleware(["auth","checkRole"]) 
+
+

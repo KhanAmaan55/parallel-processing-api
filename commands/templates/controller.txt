@@ -1,0 +1,62 @@
+import {{PascalCase}} from "App/Models/{{FolderName}}/{{PascalCase}}";
+import UserPolicy from "App/Policies/UserPolicy";
+
+
+const userPolicy = new UserPolicy();
+
+export default class {{PascalCase}}sController {
+
+    public async view({ inertia,auth }) {
+        const deletes = userPolicy.getData(auth, 'delete.{{LowerCaseModuleName}}');
+        const update = userPolicy.getData(auth, 'edit.{{LowerCaseModuleName}}');
+    
+        const permission = {
+            view: false,
+            delete: (await deletes).isValid,
+            create: false,
+            update: (await update).isValid
+        }
+        const {{LowerCaseModuleName}} = await {{PascalCase}}.all();
+        return inertia.render('{{PascalCase}}', { {{LowerCaseModuleName}}: {{LowerCaseModuleName}}, permission: permission });
+    }
+    public async create({ inertia, params }) {
+        let {{LowerCaseModuleName}}: any = [];
+        if (params.id) {
+            {{LowerCaseModuleName}} = await {{PascalCase}}.query().select('*').where('id', params.id);
+        }
+        return inertia.render('Create{{PascalCase}}', { {{LowerCaseModuleName}}: {{LowerCaseModuleName}}, id: params.id });
+    }
+
+    public async store({ request, response }) {
+
+        const {{LowerCaseModuleName}} = new {{PascalCase}}();
+        {{#columns}}
+        {{LowerCaseModuleName}}.{{fieldName}} = request.requestBody.{{fieldName}}
+        {{/columns}}
+        {{LowerCaseModuleName}}.save()
+
+        return response.send("Data is Stored");
+
+    }
+    public async update({ params, request, response }) {
+        const {{LowerCaseModuleName}} = await {{PascalCase}}.find(parseInt(params.id));
+
+        if ({{LowerCaseModuleName}}) {
+            {{#columns}}
+            {{LowerCaseModuleName}}.{{fieldName}} = request.requestBody.{{fieldName}}
+            {{/columns}}
+            {{LowerCaseModuleName}}.save();
+            return response.send("Updated  succesfully");
+        }
+        return response.send("User Not Found");
+    }
+
+    public async delete({ params, response }) {
+        const {{LowerCaseModuleName}} = await {{PascalCase}}.find(parseInt(params.id));
+        if ({{LowerCaseModuleName}}) {
+            {{LowerCaseModuleName}}.delete()
+            return response.send("{{PascalCase}} is deleted");
+        }
+        return response.send("User Not Found");
+    }
+}

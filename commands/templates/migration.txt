@@ -1,0 +1,23 @@
+import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import Env from '@ioc:Adonis/Core/Env'
+
+export default class extends BaseSchema {
+  protected tableName =  `${Env.get('{{envDbNumber}}')}.{{moduleName}}`
+
+  public async up () {
+    this.schema.createTableIfNotExists(this.tableName, (table) => {
+      {{#columns}}
+      {{#increments}}
+      table.increments('{{Field}}')
+      {{/increments}}
+      {{^increments}}
+      table.{{migrationType}}('{{Field}}'{{{migrationOption}}})
+      {{/increments}}
+      {{/columns}}
+    })
+  }
+
+  public async down () {
+    this.schema.dropTable(this.tableName)
+  }
+}
