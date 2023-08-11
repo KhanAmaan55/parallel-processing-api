@@ -2,6 +2,9 @@
 
 import type { JobHandlerContract, Job } from '@ioc:Rlanz/Queue'
 import Users from 'App/Models/main/Users'
+import Mail from '@ioc:Adonis/Addons/Mail'
+import Env from '@ioc:Adonis/Core/Env'
+
 export type SendEmailPayload = {
   Id: string
 }
@@ -21,10 +24,17 @@ export default class SendEmailJob implements JobHandlerContract {
     console.log("id",payload.Id)
     const user = await Users.find(id);
     if (user) {
-      // Update the user's name
-      user.name = "oldName";
-      await user.save();
-      console.log('User name updated successfully');
+      const res = await Mail.send((message) => {
+        message
+          .from(Env.get('SENDER_MAIL'))
+          .to(user.email)
+          .subject("is it working").html(`mail works`);
+      });
+      if (res.accepted.length > 0) {
+        console.log("Success");
+    } else {
+     console.log("User with the email not exists" );
+    }
     } else {
       console.log('User not found');
     }

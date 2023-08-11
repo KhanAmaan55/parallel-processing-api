@@ -1,14 +1,13 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Queue } from "@ioc:Rlanz/Queue";
-import SendEmailJob from "App/Jobs/Emailsend";
 import Users from "App/Models/main/Users";
 export default class HomeController {
     public async index() {
-        const users = await Users.first()
+        const id = 1
         console.log("Inside the loop")
-        console.log("queue send:", users?.id)
+        console.log("queue send:", id)
         await Queue.dispatch('App/Jobs/Emailsend', {
-            Id:users?.id
+            Id:id
         });
         console.log("is this comming late?")
         return "End";
