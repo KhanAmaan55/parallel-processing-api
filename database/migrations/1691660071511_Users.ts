@@ -2,7 +2,7 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 import Env from '@ioc:Adonis/Core/Env'
 
 export default class extends BaseSchema {
-  protected tableName =  `${Env.get('')}.Users`
+  protected tableName =  'Users'
 
   public async up () {
     this.schema.createTableIfNotExists(this.tableName, (table) => {
